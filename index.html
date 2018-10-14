@@ -1,0 +1,140 @@
+<!doctype HTML>
+<html>
+<head>
+<style>
+#centrale {
+	margin-top: 200px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+} 
+</style>
+<link href="totem.css" rel="stylesheet" type="text/css">
+<script type = "text/javascript" src = "jquery.js"></script>
+<script type = "text/javascript">	
+	function rotate(direzione, currentGallery){
+					console.log(currentGallery);
+					console.log(currdeg[currentGallery]);
+					
+					if(direzione=="n")
+					{
+						currdeg[currentGallery] = currdeg[currentGallery] - 45;	
+					}
+					if(direzione=="p")
+					{
+						currdeg[currentGallery] = currdeg[currentGallery] + 45;	
+					}
+					carousel.css({
+						"-webkit-transform": "rotateY("+currdeg[currentGallery]+"deg)",
+						"-moz-transform": "rotateY("+currdeg[currentGallery]+"deg)",
+						"-o-transform": "rotateY("+currdeg[currentGallery]+"deg)",
+						"transform": "rotateY("+currdeg[currentGallery]+"deg)"
+					});
+	};
+	
+	$(document).ready(function(){
+		var currentGallery = 0;
+		currdeg = Array(0,0);
+		carousel = $("#elenco1");
+		$("#elenco2").hide();
+		var wsUri = "ws://localhost:8080";
+		websocket = new WebSocket(wsUri);
+		
+		websocket.onmessage = function (message) {			
+			if (message.data=="play")
+			{
+				$("body").removeClass("bodyTotem");
+				$(".containerTotem").hide();
+				$("#centrale").hide();
+				$("#piedipagina").hide();
+				$("body").css({"background-color":"#000000"});
+			}				
+			if (message.data=="stop")
+			{
+				$("body").removeAttr("background-color");
+				$("body").addClass("bodyTotem");
+				$(".containerTotem").show();
+				$("#centrale").show();
+				$("#piedipagina").show();				
+			}
+			if (message.data=="changeList")
+			{
+				currentGallery++;
+				currentGallery%=2;
+				if(currentGallery==0)
+					carousel = $("#elenco1");
+				if(currentGallery==1)
+					carousel = $("#elenco2");
+				console.log(currentGallery);
+				
+				$("#elenco1").toggle();
+				$("#elenco2").toggle();
+			}
+			if (message.data=="n")
+				rotate(message.data, currentGallery);
+			if (message.data=="p")
+				rotate(message.data, currentGallery);
+		};
+		websocket.onclose = function (evt) {
+			websocket.close();
+		};
+
+	/*	
+		$("#prev").click(function(){
+		});
+		
+		$("#next").click(function(){
+			rotate("n");
+		});
+		$("#play").click(function(){
+			PlayPauseVideo(indice);
+		});
+		*/
+	});
+</script>
+</head>
+
+<body class = "bodyTotem">
+<!--
+<input id = "prev" type = "button"/>
+
+<input id = "next" type = "button"/>
+<input id = "play" type = "button"/>
+-->
+	<div class="containerTotem">
+		<div id="elenco1" class="carouselTotem">
+			<div class="itemTotem aTotem"></div>
+			<div class="itemTotem bTotem"></div>
+			<div class="itemTotem cTotem"></div>
+			<div class="itemTotem dTotem"></div>
+			<div class="itemTotem eTotem"></div>
+			<div class="itemTotem fTotem"></div>
+			<div class="itemTotem gTotem"></div>
+			<div class="itemTotem hTotem"></div>
+		</div>
+		<div id="elenco2" class="carouselTotem">
+			<div class="itemTotem iTotem"></div>
+			<div class="itemTotem lTotem"></div>
+			<div class="itemTotem mTotem"></div>
+			<div class="itemTotem nTotem"></div>
+			<div class="itemTotem oTotem"></div>
+			<div class="itemTotem pTotem"></div>
+			<div class="itemTotem qTotem"></div>
+			<div class="itemTotem rTotem"></div>
+		</div>
+	</div>	
+	
+	<div>	
+		<!-- ringraziamenti<img id="centrale" src="4.png"/>-->
+		<img id="centrale" src="3.png"/>
+	</div>
+	
+	<footer>
+		<div id="piedipagina">
+				<img id="img1" class="col-md-4" src="1.png"/>
+				<img id="img2" class="col-md-4" src="2.png"/>
+				<img id="img3" class="col-md-4" src="5.png"/>
+		</div>
+	</footer>
+</body>
+</html>
